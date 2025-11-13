@@ -21,8 +21,13 @@ const mapDiv = document.createElement("div");
 mapDiv.id = "map";
 document.body.append(mapDiv);
 
+// inventory token
 let heldToken: number | null = 2;
 
+// win condition
+const winCondition = 16;
+
+// html element for inventory area
 const statusPanelDiv = document.createElement("div");
 statusPanelDiv.id = "statusPanel";
 statusPanelDiv.innerText = `${heldToken}`;
@@ -85,14 +90,20 @@ function spawnCell(x: number, y: number) {
       map,
     );
 
-  // bind token number to cache
-  updateDisplayedToken(rect, tokenValue);
-
   // writing and buttons of pop up - take, combine, store
   const popupDiv = document.createElement("div");
   popupDiv.innerHTML =
     `<div><span id="message">There is a cell at ${x},${y}.  It has a token of ${tokenValue}.</span></div>
 <button id="take">Take</button><button id="combine">Combine</button><button id = "store">store</button>`;
+
+  // bind token number to cache
+  updateDisplayedToken(rect, tokenValue);
+
+  popupDiv.addEventListener("click", () => {
+    // update buttons to correctly disable
+    toggleButtons(popupDiv, tokenValue, x, y);
+  })
+  
 
   // take button event listener
   popupDiv.querySelector<HTMLButtonElement>("#take")!.addEventListener(
@@ -105,6 +116,17 @@ function spawnCell(x: number, y: number) {
         // grab token
         heldToken = tokenValue;
         statusPanelDiv.innerHTML = `${heldToken}`;
+
+        // if win condition reached:
+        if (heldToken == winCondition) {
+          // create TT
+          const tooltip = leaflet.tooltip({
+            permanent: true,
+            direction: "center",
+          }).setContent(`Congratulations! You've reached the win condition of ${winCondition}!`);
+
+          playerMarker.bindTooltip(tooltip);
+        }
 
         // change value of cache token
         tokenValue = null;
@@ -124,10 +146,10 @@ function spawnCell(x: number, y: number) {
       else {
         console.log("Cannot take null token");
       }
-      // refresh buttons
-      checkButtons(popupDiv, tokenValue, x, y);
       // refresh displayed token
       updateDisplayedToken(rect, tokenValue);
+      // refresh buttons
+      toggleButtons(popupDiv, tokenValue, x, y);
     },
   );
 
@@ -160,10 +182,10 @@ function spawnCell(x: number, y: number) {
       else {
         console.log(`Cannot combine!`);
       }
-      // refresh buttons
-      checkButtons(popupDiv, tokenValue, x, y);
       // refresh displayed token
       updateDisplayedToken(rect, tokenValue);
+      // refresh buttons
+      toggleButtons(popupDiv, tokenValue, x, y);
     },
   );
 
@@ -194,10 +216,10 @@ function spawnCell(x: number, y: number) {
       else {
         console.log("Player has no token. Cannot store anything");
       }
-      // refresh buttons
-      checkButtons(popupDiv, tokenValue, x, y);
       // refresh displayed token
       updateDisplayedToken(rect, tokenValue);
+      // refresh buttons
+      toggleButtons(popupDiv, tokenValue, x, y);
     },
   );
 
@@ -217,17 +239,33 @@ function swapToken(
   console.log(
     `You have a token in your inventory.  Swapping inventory with cell`,
   );
+
+  // standard swapping
   const temp = heldToken;
   heldToken = tokenValue;
   tokenValue = temp;
+
+  // html updates
   statusPanelDiv.innerHTML = `${heldToken}`;
   div.querySelector<HTMLSpanElement>("#message")!.innerHTML =
     `There is a cell at ${x},${y}.  It has a token of ${tokenValue}`;
+  
+  // if win condition reached:
+  if (heldToken == winCondition) {
+    // create TT
+    const tooltip = leaflet.tooltip({
+      permanent: true,
+      direction: "center",
+    }).setContent(`Congratulations! You've reached the win condition of ${winCondition}!`);
+
+    playerMarker.bindTooltip(tooltip);
+  }
+  
   return tokenValue;
 }
 
 // check which buttons to activate
-function checkButtons(
+function toggleButtons(
   div: HTMLDivElement,
   tokenValue: number | null,
   x: number,

@@ -1,6 +1,6 @@
 # Game Design Vision
 
-{a few-sentence description of the game mechanics}
+The player will be able to take, combine, and store tokens using caches found on the map and the singular token allowed in their inventory. The player will only be able to interact with caches that are nearby.
 
 ## Technologies
 
@@ -24,10 +24,10 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 - [x] add token to caches
 - [x] add combine or take token on click event to caches
 - [x] add inventory token slot -> kind of done, needs better functionality
-- [] add detection of token value requirement
+- [x] add detection of token value requirement
 - [] create player-cache hopping interaction -> for B?
 - [x] play with range and probability
 - [x] add visual to caches that displays number
 - [x] update visual to caches upon buttons
-- [] distance from player code
+- [x] distance from player code
 - [] make rectangles different colors depending on token -> maybe later
