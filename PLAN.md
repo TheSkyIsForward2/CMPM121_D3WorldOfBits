@@ -25,8 +25,9 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 - [x] add combine or take token on click event to caches
 - [x] add inventory token slot -> kind of done, needs better functionality
 - [] add detection of token value requirement
-- [] create player-cache hopping interaction -> for B
+- [] create player-cache hopping interaction -> for B?
 - [x] play with range and probability
 - [x] add visual to caches that displays number
-- [] update visual to caches upon buttons
+- [x] update visual to caches upon buttons
+- [] distance from player code
 - [] make rectangles different colors depending on token -> maybe later

@@ -85,16 +85,8 @@ function spawnCell(x: number, y: number) {
       map,
     );
 
-  // bind number that is the
-  if (tokenValue != null) {
-    const tooltip = leaflet.tooltip({
-      permanent: true,
-      direction: "center",
-    }).setContent(tokenValue!.toString());
-    rect.bindTooltip(tooltip);
-  } else {
-    rect.unbindTooltip();
-  }
+  // bind token number to cache
+  updateDisplayedToken(rect, tokenValue);
 
   // writing and buttons of pop up - take, combine, store
   const popupDiv = document.createElement("div");
@@ -134,6 +126,8 @@ function spawnCell(x: number, y: number) {
       }
       // refresh buttons
       checkButtons(popupDiv, tokenValue, x, y);
+      // refresh displayed token
+      updateDisplayedToken(rect, tokenValue);
     },
   );
 
@@ -168,6 +162,8 @@ function spawnCell(x: number, y: number) {
       }
       // refresh buttons
       checkButtons(popupDiv, tokenValue, x, y);
+      // refresh displayed token
+      updateDisplayedToken(rect, tokenValue);
     },
   );
 
@@ -200,6 +196,8 @@ function spawnCell(x: number, y: number) {
       }
       // refresh buttons
       checkButtons(popupDiv, tokenValue, x, y);
+      // refresh displayed token
+      updateDisplayedToken(rect, tokenValue);
     },
   );
 
@@ -235,11 +233,12 @@ function checkButtons(
   x: number,
   y: number,
 ) {
-  //
+  // grab buttons
   const take = div.querySelector<HTMLButtonElement>("#take")!;
   const combine = div.querySelector<HTMLButtonElement>("#combine")!;
   const store = div.querySelector<HTMLButtonElement>("#store")!;
 
+  // disable all
   take.disabled = true;
   combine.disabled = true;
   store.disabled = true;
@@ -249,14 +248,33 @@ function checkButtons(
     return;
   }
 
+  // if have a token, turn on take
   if (tokenValue) {
     take.disabled = false;
   }
+  // if token is same as inventory token, turn on combine
   if (tokenValue == heldToken) {
     combine.disabled = false;
   }
+  // if token is held, turn on store
   if (heldToken) {
     store.disabled = false;
+  }
+}
+
+// function for updating visuals of tokens
+function updateDisplayedToken(
+  rect: leaflet.Rectangle,
+  tokenValue: number | null,
+) {
+  if (tokenValue != null) {
+    const tooltip = leaflet.tooltip({
+      permanent: true,
+      direction: "center",
+    }).setContent(tokenValue!.toString());
+    rect.bindTooltip(tooltip);
+  } else {
+    rect.unbindTooltip();
   }
 }
 
