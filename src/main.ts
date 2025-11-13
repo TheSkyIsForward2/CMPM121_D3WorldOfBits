@@ -100,6 +100,8 @@ function spawnCell(x: number, y: number) {
   updateDisplayedToken(rect, tokenValue);
 
   popupDiv.addEventListener("click", () => {
+    // bind token number to cache
+    updateDisplayedToken(rect, tokenValue);
     // update buttons to correctly disable
     toggleButtons(popupDiv, tokenValue, x, y);
   });
@@ -149,8 +151,6 @@ function spawnCell(x: number, y: number) {
       }
       // refresh displayed token
       updateDisplayedToken(rect, tokenValue);
-      // refresh buttons
-      toggleButtons(popupDiv, tokenValue, x, y);
     },
   );
 
@@ -185,8 +185,6 @@ function spawnCell(x: number, y: number) {
       }
       // refresh displayed token
       updateDisplayedToken(rect, tokenValue);
-      // refresh buttons
-      toggleButtons(popupDiv, tokenValue, x, y);
     },
   );
 
@@ -217,15 +215,13 @@ function spawnCell(x: number, y: number) {
       else {
         console.log("Player has no token. Cannot store anything");
       }
-      // refresh displayed token
-      updateDisplayedToken(rect, tokenValue);
-      // refresh buttons
-      toggleButtons(popupDiv, tokenValue, x, y);
     },
   );
 
   // bind to rect
   rect.bindPopup(() => {
+    // update buttons to correctly disable
+    toggleButtons(popupDiv, tokenValue, x, y);
     return popupDiv;
   });
 }
