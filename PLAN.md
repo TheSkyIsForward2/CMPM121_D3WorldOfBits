@@ -19,5 +19,14 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 - [x] delete everything in main.ts
 - [x] put a basic leaflet map on the screen
 - [x] draw the player's location on the map
-- [] draw a rectangle representing one cell on the map
-- [] use loops to draw a whole grid of cells on the map
+- [x] draw a rectangle representing one cell on the map
+- [x] use loops to draw a whole grid of cells on the map
+- [x] add token to caches
+- [x] add combine or take token on click event to caches
+- [x] add inventory token slot -> kind of done, needs better functionality
+- [] add detection of token value requirement
+- [] create player-cache hopping interaction -> for B
+- [x] play with range and probability
+- [x] add visual to caches that displays number
+- [] update visual to caches upon buttons
+- [] make rectangles different colors depending on token -> maybe later
