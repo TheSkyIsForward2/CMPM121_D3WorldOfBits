@@ -102,8 +102,7 @@ function spawnCell(x: number, y: number) {
   popupDiv.addEventListener("click", () => {
     // update buttons to correctly disable
     toggleButtons(popupDiv, tokenValue, x, y);
-  })
-  
+  });
 
   // take button event listener
   popupDiv.querySelector<HTMLButtonElement>("#take")!.addEventListener(
@@ -123,7 +122,9 @@ function spawnCell(x: number, y: number) {
           const tooltip = leaflet.tooltip({
             permanent: true,
             direction: "center",
-          }).setContent(`Congratulations! You've reached the win condition of ${winCondition}!`);
+          }).setContent(
+            `Congratulations! You've reached the win condition of ${winCondition}!`,
+          );
 
           playerMarker.bindTooltip(tooltip);
         }
@@ -249,18 +250,20 @@ function swapToken(
   statusPanelDiv.innerHTML = `${heldToken}`;
   div.querySelector<HTMLSpanElement>("#message")!.innerHTML =
     `There is a cell at ${x},${y}.  It has a token of ${tokenValue}`;
-  
+
   // if win condition reached:
   if (heldToken == winCondition) {
     // create TT
     const tooltip = leaflet.tooltip({
       permanent: true,
       direction: "center",
-    }).setContent(`Congratulations! You've reached the win condition of ${winCondition}!`);
+    }).setContent(
+      `Congratulations! You've reached the win condition of ${winCondition}!`,
+    );
 
     playerMarker.bindTooltip(tooltip);
   }
-  
+
   return tokenValue;
 }
 
