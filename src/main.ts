@@ -333,8 +333,10 @@ function updateDisplayedToken(
   }
 }
 
-// obtainable range of caches drawn
+// obtainable range of caches drawn - need to update to follow person
 leaflet.circleMarker(CLASSROOM_LATLNG, { radius: 200 }).addTo(map);
+
+// generate cells 
 for (let i = -RANGE; i < RANGE; i++) {
   for (let j = -RANGE; j < RANGE; j++) {
     if (luck([i, j].toString()) < CELL_SPAWN_PROBABILITY) {
@@ -361,3 +363,12 @@ function processMovement(
   }
   return [location.lat, location.lng];
 }
+
+// helper functions for converting Grid and LatLong coordinates
+/*function latLongToGrid(x: number) {
+  return Math.round(x / 0.0001);
+}
+
+function gridToLatLong(x: number) {
+  return x * 0.0001;
+}*/

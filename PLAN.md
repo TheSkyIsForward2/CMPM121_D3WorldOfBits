@@ -36,8 +36,9 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 
 Key technical challenge: Can you improve on your system to simulate map movement?
 
-[] buttons that move player
-[] create helper function to convert between grid coordinates and LatLong
-[] generate cells using moveend when map is moved
+[x] buttons that move player
+[x] create helper function to convert between grid coordinates and LatLong
+[] generate cells using moveend when map is moved - probably as function
+[] circle moves with player
 [] cells are memoryless
-[] update win condition to 32
+[] update win condition to 32 or higher?
