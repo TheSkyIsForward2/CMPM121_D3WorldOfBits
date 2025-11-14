@@ -44,16 +44,21 @@ const wrapDiv = document.createElement("div");
 wrapDiv.id = "wrapDiv";
 document.body.append(wrapDiv);
 
-const mapDiv = document.createElement("div");
-mapDiv.id = "map";
-wrapDiv.append(mapDiv);
-
 let heldToken: number | null = 2;
+
+const inventoryDiv = document.createElement("div");
+inventoryDiv.id = "inventory";
+inventoryDiv.innerText = "Inventory:";
+wrapDiv.append(inventoryDiv);
 
 const statusPanelDiv = document.createElement("div");
 statusPanelDiv.id = "statusPanel";
 statusPanelDiv.innerText = `${heldToken}`;
-wrapDiv.append(statusPanelDiv);
+inventoryDiv.append(statusPanelDiv);
+
+const mapDiv = document.createElement("div");
+mapDiv.id = "map";
+wrapDiv.append(mapDiv);
 
 // win condition
 const winCondition = 16;
