@@ -29,10 +29,14 @@ direction.forEach((item) => {
   directionButton.addEventListener("click", () => {
     // move in directionection with movement function
     playerMarker.setLatLng(processMovement(playerMarker.getLatLng(), item));
-    // update view
-    map.setView(playerMarker.getLatLng());
+    // clear layers first
+    featureGroup.clearLayers();
     // update circle
     updateCircle();
+    // generate cells
+    cellGeneration();
+    // update map view
+    map.setView(playerMarker.getLatLng());
   });
 });
 
@@ -63,7 +67,7 @@ const CLASSROOM_LATLNG = leaflet.latLng(
 // Tunable gameplay parameters
 const GAMEPLAY_ZOOM_LEVEL = 19;
 const TILE_DEGREES = 1e-4;
-const RANGE = 12;
+const RANGE = 20;
 const CELL_SPAWN_PROBABILITY = 0.07;
 
 // map
@@ -343,7 +347,7 @@ function updateCircle() {
 }
 
 // obtainable range of caches drawn - need to update to follow person
-leaflet.circleMarker(CLASSROOM_LATLNG, { radius: 200 }).addTo(map);
+leaflet.circleMarker(CLASSROOM_LATLNG, { radius: 200 }).addTo(featureGroup);
 
 // generate cells
 function cellGeneration() {
@@ -363,8 +367,10 @@ function cellGeneration() {
 // call at main to generate
 cellGeneration();
 
-// tie generation function to move-end
+// tie generation function and circle update to move-end
 map.addEventListener("moveend", () => {
+  featureGroup.clearLayers();
+  updateCircle();
   cellGeneration();
 });
 

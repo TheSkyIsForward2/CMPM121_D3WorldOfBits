@@ -41,6 +41,8 @@ Key technical challenge: Can you improve on your system to simulate map movement
 [x] generate cells using moveend when map is moved - probably as function
 [x] change coordinate system to use new conversion functions
 [x] add Feature Group to aid with refreshing items
-[] circle moves with player
+[x] circle moves with player
+[x] fix bug with circle layer clear
+[] fix distance check bug
 [] cells are memoryless
 [] update win condition to 32 or higher?
