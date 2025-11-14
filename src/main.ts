@@ -17,23 +17,41 @@ controlPanelDiv.id = "controlPanel";
 controlPanelDiv.innerHTML = `<h1>D3: World of Bits</h1>`;
 document.body.append(controlPanelDiv);
 
+// text array for buttons
+const directionections = ["Up", "Down", "Left", "Right"];
+
+directionections.forEach((item) => {
+  // add buttons
+  const directionectionButton = document.createElement("button");
+  directionectionButton.innerHTML = item;
+  controlPanelDiv.append(directionectionButton);
+
+  directionectionButton.addEventListener("click", () => {
+    // move in directionection with movement function
+    playerMarker.setLatLng(processMovement(playerMarker.getLatLng(), item));
+    map.setView(playerMarker.getLatLng());
+  });
+});
+
+const wrapDiv = document.createElement("div");
+wrapDiv.id = "wrapDiv";
+document.body.append(wrapDiv);
+
 const mapDiv = document.createElement("div");
 mapDiv.id = "map";
-document.body.append(mapDiv);
+wrapDiv.append(mapDiv);
 
-// inventory token
 let heldToken: number | null = 2;
+
+const statusPanelDiv = document.createElement("div");
+statusPanelDiv.id = "statusPanel";
+statusPanelDiv.innerText = `${heldToken}`;
+wrapDiv.append(statusPanelDiv);
 
 // win condition
 const winCondition = 16;
 
-// html element for inventory area
-const statusPanelDiv = document.createElement("div");
-statusPanelDiv.id = "statusPanel";
-statusPanelDiv.innerText = `${heldToken}`;
-document.body.append(statusPanelDiv);
-
-// Our classroom location
+// Our classroom locationation
 const CLASSROOM_LATLNG = leaflet.latLng(
   36.997936938057016,
   -122.05703507501151,
@@ -66,7 +84,7 @@ leaflet
 
 // player mark
 const playerMarker = leaflet.marker(CLASSROOM_LATLNG).addTo(map);
-playerMarker.bindTooltip("Current Location");
+playerMarker.bindTooltip("Current locationation");
 
 function spawnCell(x: number, y: number) {
   const origin = CLASSROOM_LATLNG;
@@ -280,7 +298,7 @@ function toggleButtons(
   combine.disabled = true;
   store.disabled = true;
 
-  // interact from location check
+  // interact from locationation check
   if (Math.hypot(-x, -y) > 4.5) {
     return;
   }
@@ -323,4 +341,23 @@ for (let i = -RANGE; i < RANGE; i++) {
       spawnCell(i, j);
     }
   }
+}
+
+// movement function
+function processMovement(
+  location: leaflet.LatLng,
+  direction: string,
+): leaflet.LatLng | [number, number] {
+  
+  switch (direction) {
+    case "Up":
+      return [location.lat + 0.0001, location.lng];
+    case "Down":
+      return [location.lat - 0.0001, location.lng];
+    case "Left":
+      return [location.lat, location.lng - 0.0001];
+    case "Right":
+      return [location.lat, location.lng + 0.0001];
+  }
+  return [location.lat, location.lng];
 }
