@@ -43,7 +43,7 @@ const CLASSROOM_LATLNG = leaflet.latLng(
 const GAMEPLAY_ZOOM_LEVEL = 19;
 const TILE_DEGREES = 1e-4;
 const RANGE = 16;
-const CELL_SPAWN_PROBABILITY = 0.5;
+const CELL_SPAWN_PROBABILITY = 0.07;
 
 // map
 const map = leaflet.map(mapDiv, {

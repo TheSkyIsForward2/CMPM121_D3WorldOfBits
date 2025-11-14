@@ -31,3 +31,13 @@ Key gameplay challenge: Can players collect and craft tokens from nearby locatio
 - [x] update visual to caches upon buttons
 - [x] distance from player code
 - [] make rectangles different colors depending on token -> maybe later
+
+## D3.b: Globe-spanning Gameplay - Player Movement and Win Condition
+
+Key technical challenge: Can you improve on your system to simulate map movement?
+
+[] buttons that move player
+[] create helper function to convert between grid coordinates and LatLong
+[] generate cells using moveend when map is moved
+[] cells are memoryless
+[] update win condition to 32
