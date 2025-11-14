@@ -39,6 +39,8 @@ Key technical challenge: Can you improve on your system to simulate map movement
 [x] buttons that move player
 [x] create helper function to convert between grid coordinates and LatLong
 [x] generate cells using moveend when map is moved - probably as function
+[x] change coordinate system to use new conversion functions
+[] add Feature Group to aid with refreshing items
 [] circle moves with player
 [] cells are memoryless
 [] update win condition to 32 or higher?

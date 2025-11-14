@@ -29,6 +29,7 @@ directionections.forEach((item) => {
   directionectionButton.addEventListener("click", () => {
     // move in directionection with movement function
     playerMarker.setLatLng(processMovement(playerMarker.getLatLng(), item));
+    // update view
     map.setView(playerMarker.getLatLng());
   });
 });
@@ -60,7 +61,7 @@ const CLASSROOM_LATLNG = leaflet.latLng(
 // Tunable gameplay parameters
 const GAMEPLAY_ZOOM_LEVEL = 19;
 const TILE_DEGREES = 1e-4;
-const RANGE = 16;
+const RANGE = 12;
 const CELL_SPAWN_PROBABILITY = 0.07;
 
 // map
@@ -87,11 +88,14 @@ const playerMarker = leaflet.marker(CLASSROOM_LATLNG).addTo(map);
 playerMarker.bindTooltip("Current locationation");
 
 function spawnCell(x: number, y: number) {
-  const origin = CLASSROOM_LATLNG;
-  const bounds = leaflet.latLngBounds([
-    [origin.lat + x * TILE_DEGREES, origin.lng + y * TILE_DEGREES],
-    [origin.lat + (x + 1) * TILE_DEGREES, origin.lng + (y + 1) * TILE_DEGREES],
-  ]);
+  // x and y by lat long
+  x = gridToLatLong(x);
+  y = gridToLatLong(y);
+
+  const bounds = leaflet.latLngBounds([[y, x], [
+    y + TILE_DEGREES,
+    x + TILE_DEGREES,
+  ]]);
 
   const possibleStartingNum = [0, 2, 4, 8, 16];
 
@@ -336,12 +340,16 @@ function updateDisplayedToken(
 // obtainable range of caches drawn - need to update to follow person
 leaflet.circleMarker(CLASSROOM_LATLNG, { radius: 200 }).addTo(map);
 
-// generate cells 
+// generate cells
 function cellGeneration() {
+  // x and y by grid coords
+  const x = latLongToGrid(map.getCenter().lng);
+  const y = latLongToGrid(map.getCenter().lat);
+
   for (let i = -RANGE; i < RANGE; i++) {
     for (let j = -RANGE; j < RANGE; j++) {
-      if (luck([i, j].toString()) < CELL_SPAWN_PROBABILITY) {
-        spawnCell(i, j);
+      if (luck([x - i, y - j].toString()) < CELL_SPAWN_PROBABILITY) {
+        spawnCell(x - i, y - j);
       }
     }
   }
@@ -360,7 +368,6 @@ function processMovement(
   location: leaflet.LatLng,
   direction: string,
 ): leaflet.LatLng | [number, number] {
-  
   switch (direction) {
     case "Up":
       return [location.lat + 0.0001, location.lng];
@@ -375,10 +382,10 @@ function processMovement(
 }
 
 // helper functions for converting Grid and LatLong coordinates
-/*function latLongToGrid(x: number) {
+function latLongToGrid(x: number) {
   return Math.round(x / 0.0001);
 }
 
 function gridToLatLong(x: number) {
   return x * 0.0001;
-}*/
+}
