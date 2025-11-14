@@ -337,13 +337,23 @@ function updateDisplayedToken(
 leaflet.circleMarker(CLASSROOM_LATLNG, { radius: 200 }).addTo(map);
 
 // generate cells 
-for (let i = -RANGE; i < RANGE; i++) {
-  for (let j = -RANGE; j < RANGE; j++) {
-    if (luck([i, j].toString()) < CELL_SPAWN_PROBABILITY) {
-      spawnCell(i, j);
+function cellGeneration() {
+  for (let i = -RANGE; i < RANGE; i++) {
+    for (let j = -RANGE; j < RANGE; j++) {
+      if (luck([i, j].toString()) < CELL_SPAWN_PROBABILITY) {
+        spawnCell(i, j);
+      }
     }
   }
 }
+
+// call at main to generate
+cellGeneration();
+
+// tie generation function to move-end
+map.addEventListener("moveend", () => {
+  cellGeneration();
+});
 
 // movement function
 function processMovement(
