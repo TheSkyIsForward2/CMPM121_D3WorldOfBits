@@ -18,19 +18,21 @@ controlPanelDiv.innerHTML = `<h1>D3: World of Bits</h1>`;
 document.body.append(controlPanelDiv);
 
 // text array for buttons
-const directionections = ["Up", "Down", "Left", "Right"];
+const direction = ["Up", "Down", "Left", "Right"];
 
-directionections.forEach((item) => {
+direction.forEach((item) => {
   // add buttons
-  const directionectionButton = document.createElement("button");
-  directionectionButton.innerHTML = item;
-  controlPanelDiv.append(directionectionButton);
+  const directionButton = document.createElement("button");
+  directionButton.innerHTML = item;
+  controlPanelDiv.append(directionButton);
 
-  directionectionButton.addEventListener("click", () => {
+  directionButton.addEventListener("click", () => {
     // move in directionection with movement function
     playerMarker.setLatLng(processMovement(playerMarker.getLatLng(), item));
     // update view
     map.setView(playerMarker.getLatLng());
+    // update circle
+    updateCircle();
   });
 });
 
@@ -74,6 +76,9 @@ const map = leaflet.map(mapDiv, {
   scrollWheelZoom: false,
 });
 
+// feature group
+const featureGroup = leaflet.featureGroup().addTo(map);
+
 // background
 leaflet
   .tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -112,6 +117,9 @@ function spawnCell(x: number, y: number) {
       map,
     );
 
+  // add the rect to the feature group
+  rect.addTo(featureGroup);
+
   // writing and buttons of pop up - take, combine, store
   const popupDiv = document.createElement("div");
   popupDiv.innerHTML =
@@ -134,8 +142,6 @@ function spawnCell(x: number, y: number) {
     () => {
       // on click, if inventory token doesn't exist
       if (heldToken == null) {
-        console.log(`You have no token.  Picking up token of ${tokenValue}`);
-
         // grab token
         heldToken = tokenValue;
         statusPanelDiv.innerHTML = `${heldToken}`;
@@ -167,9 +173,6 @@ function spawnCell(x: number, y: number) {
       } // if you have a token, swap
       else if (tokenValue) {
         tokenValue = swapToken(tokenValue, popupDiv, x, y);
-      } // if there exists no token (shouldn't happen because of button update func)
-      else {
-        console.log("Cannot take null token");
       }
       // refresh displayed token
       updateDisplayedToken(rect, tokenValue);
@@ -255,10 +258,6 @@ function swapToken(
   x: number,
   y: number,
 ) {
-  console.log(
-    `You have a token in your inventory.  Swapping inventory with cell`,
-  );
-
   // standard swapping
   const temp = heldToken;
   heldToken = tokenValue;
@@ -271,7 +270,7 @@ function swapToken(
 
   // if win condition reached:
   if (heldToken == winCondition) {
-    // create TT
+    // create TT - maybe change to show on panel?
     const tooltip = leaflet.tooltip({
       permanent: true,
       direction: "center",
@@ -335,6 +334,12 @@ function updateDisplayedToken(
   } else {
     rect.unbindTooltip();
   }
+}
+
+function updateCircle() {
+  const radius = leaflet.circleMarker(playerMarker.getLatLng(), { radius: 200 })
+    .addTo(map);
+  featureGroup.addLayer(radius);
 }
 
 // obtainable range of caches drawn - need to update to follow person
