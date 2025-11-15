@@ -43,7 +43,7 @@ Key technical challenge: Can you improve on your system to simulate map movement
 [x] add Feature Group to aid with refreshing items
 [x] circle moves with player
 [x] fix bug with circle layer clear
-[] update layout so inventory is on left side
-[] fix distance check bug
-[] cells are memoryless
-[] update win condition to 32 or higher?
+[x] update layout so inventory is on left side
+[x] fix distance check bug
+[x] cells are memoryless
+[x] update win condition to 32 or higher?

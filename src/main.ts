@@ -61,12 +61,12 @@ mapDiv.id = "map";
 wrapDiv.append(mapDiv);
 
 // win condition
-const winCondition = 16;
+const winCondition = 32;
 
 // Our classroom locationation
 const CLASSROOM_LATLNG = leaflet.latLng(
-  36.997936938057016,
-  -122.05703507501151,
+  36.9979,
+  -122.0570,
 );
 
 // Tunable gameplay parameters
@@ -111,6 +111,9 @@ function spawnCell(x: number, y: number) {
     x + TILE_DEGREES,
   ]]);
 
+  const xValue = x.toFixed(4);
+  const yValue = y.toFixed(4);
+
   const possibleStartingNum = [0, 2, 4, 8, 16];
 
   // use luck to get random number 0-4
@@ -132,18 +135,11 @@ function spawnCell(x: number, y: number) {
   // writing and buttons of pop up - take, combine, store
   const popupDiv = document.createElement("div");
   popupDiv.innerHTML =
-    `<div><span id="message">There is a cell at ${x},${y}.  It has a token of ${tokenValue}.</span></div>
+    `<div><span id="message">There is a cell at ${xValue},${yValue}.  It has a token of ${tokenValue}.</span></div>
 <button id="take">Take</button><button id="combine">Combine</button><button id = "store">store</button>`;
 
   // bind token number to cache
   updateDisplayedToken(rect, tokenValue);
-
-  popupDiv.addEventListener("click", () => {
-    // bind token number to cache
-    updateDisplayedToken(rect, tokenValue);
-    // update buttons to correctly disable
-    toggleButtons(popupDiv, tokenValue, x, y);
-  });
 
   // take button event listener
   popupDiv.querySelector<HTMLButtonElement>("#take")!.addEventListener(
@@ -173,7 +169,7 @@ function spawnCell(x: number, y: number) {
 
         // html update
         popupDiv.querySelector<HTMLSpanElement>("#message")!.innerHTML =
-          `There is a cell at ${x},${y}. It has no token.`;
+          `There is a cell at ${xValue},${yValue}. It has no token.`;
 
         // turn take button off
         popupDiv.querySelector<HTMLButtonElement>("#take")!.disabled = true;
@@ -205,11 +201,11 @@ function spawnCell(x: number, y: number) {
 
         // html update
         popupDiv.querySelector<HTMLSpanElement>("#message")!.innerHTML =
-          `There is a cell at ${x},${y}. It has a token of ${tokenValue}.`;
+          `There is a cell at ${xValue},${yValue}. It has a token of ${tokenValue}.`;
 
         // update inventory token and html to null
         heldToken = null;
-        statusPanelDiv.innerText = `${heldToken}`;
+        statusPanelDiv.innerText = " ";
 
         // store button turns on
         popupDiv.querySelector<HTMLButtonElement>("#store")!.disabled = true;
@@ -232,23 +228,20 @@ function spawnCell(x: number, y: number) {
         tokenValue = swapToken(tokenValue, popupDiv, x, y);
       } // else if you hold token
       else if (heldToken) {
-        console.log(`Storing token into cell`);
-
         // token value becomes inventory token's
         tokenValue = heldToken;
         heldToken = null;
 
         // html updates
-        statusPanelDiv.innerHTML = `${heldToken}`;
+        statusPanelDiv.innerHTML = " ";
         popupDiv.querySelector<HTMLSpanElement>("#message")!.innerHTML =
-          `There is a cell at ${x},${y}.  It has a token of ${tokenValue}`;
+          `There is a cell at ${xValue},${yValue}.  It has a token of ${tokenValue}`;
 
         // take button turns on
         popupDiv.querySelector<HTMLButtonElement>("#take")!.disabled = false;
-      } // if there exists no token (shouldn't happen because of button update func)
-      else {
-        console.log("Player has no token. Cannot store anything");
       }
+      // refresh displayed token
+      updateDisplayedToken(rect, tokenValue);
     },
   );
 
@@ -275,7 +268,9 @@ function swapToken(
   // html updates
   statusPanelDiv.innerHTML = `${heldToken}`;
   div.querySelector<HTMLSpanElement>("#message")!.innerHTML =
-    `There is a cell at ${x},${y}.  It has a token of ${tokenValue}`;
+    `There is a cell at ${x.toFixed(4)},${
+      y.toFixed(4)
+    }.  It has a token of ${tokenValue}`;
 
   // if win condition reached:
   if (heldToken == winCondition) {
@@ -310,8 +305,13 @@ function toggleButtons(
   combine.disabled = true;
   store.disabled = true;
 
-  // interact from locationation check
-  if (Math.hypot(-x, -y) > 4.5) {
+  // roughly 48 meters
+  const maxMeters = 0.00048 * 111320;
+  // point in lat long leaflet format
+  const pointLatLng = new leaflet.LatLng(y, x);
+
+  // interact from location check
+  if (pointLatLng.distanceTo(playerMarker.getLatLng()) > maxMeters) {
     return;
   }
 
