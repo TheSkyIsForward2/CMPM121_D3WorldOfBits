@@ -17,6 +17,9 @@ controlPanelDiv.id = "controlPanel";
 controlPanelDiv.innerHTML = `<h1>D3: World of Bits</h1>`;
 document.body.append(controlPanelDiv);
 
+// map
+const cellState = new Map<string, { tokenValue: number | null }>();
+
 // text array for buttons
 const direction = ["Up", "Down", "Left", "Right"];
 
