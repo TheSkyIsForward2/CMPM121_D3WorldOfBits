@@ -119,12 +119,19 @@ function spawnCell(x: number, y: number) {
 
   const possibleStartingNum = [0, 2, 4, 8, 16];
 
-  // use luck to get random number 0-4
-  let tokenValue: number | null = possibleStartingNum[
-    Math.floor(
-      luck([x, y, "initialValue"].toString()) * 4,
-    )
-  ];
+  // get key
+  const key = `${x},${y}`;
+  let tokenValue: number | null;
+
+  // if map has it
+  if (cellState.has(key)) {
+    tokenValue = cellState.get(key)!.tokenValue;
+  } else {
+    // else create one using luck
+    tokenValue = possibleStartingNum[
+      Math.floor(luck([x, y, "initialValue"].toString()) * 4)
+    ];
+  }
 
   // create rect, maybe change color later
   const rect = leaflet.rectangle(bounds, { color: "#ffffffff", weight: 3 })

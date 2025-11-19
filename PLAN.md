@@ -57,4 +57,4 @@ Key technical challenge: Can you create a system to give cells permanence?
 [x] create map for Memento pattern
 [x] create helper function for map updating
 [] figure out where to put helper function in current code
-[] feed map the cells upon creation
+[x] feed map the cells upon creation
