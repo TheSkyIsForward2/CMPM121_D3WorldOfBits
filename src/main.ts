@@ -400,6 +400,12 @@ function processMovement(
   return [location.lat, location.lng];
 }
 
+// helper function for updating map cells
+function _saveCellState(x: number, y: number, tokenValue: number | null) {
+  const key = `${x},${y}`;
+  cellState.set(key, { tokenValue });
+}
+
 // helper functions for converting Grid and LatLong coordinates
 function latLongToGrid(x: number) {
   return Math.round(x / 0.0001);

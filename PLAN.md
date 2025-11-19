@@ -55,6 +55,6 @@ Key technical challenge: Can you create a system to give cells permanence?
 [x] Flyweight Pattern - cells do not consume memory (already had this as rects do not appear when off-screen)
 [] Memento Pattern - give cells permanence
 [x] create map for Memento pattern
-[] create helper function for map updating
+[x] create helper function for map updating
 [] figure out where to put helper function in current code
 [] feed map the cells upon creation
