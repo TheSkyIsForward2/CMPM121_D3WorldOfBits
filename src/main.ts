@@ -63,9 +63,6 @@ const mapDiv = document.createElement("div");
 mapDiv.id = "map";
 wrapDiv.append(mapDiv);
 
-// win condition
-const winCondition = 32;
-
 // Our classroom locationation
 const CLASSROOM_LATLNG = leaflet.latLng(
   36.9979,
@@ -77,6 +74,8 @@ const GAMEPLAY_ZOOM_LEVEL = 19;
 const TILE_DEGREES = 1e-4;
 const RANGE = 20;
 const CELL_SPAWN_PROBABILITY = 0.07;
+const winCondition = 32;
+const possibleStartingNum = [0, 2, 4, 8, 16];
 
 // map
 const map = leaflet.map(mapDiv, {
@@ -116,8 +115,6 @@ function spawnCell(x: number, y: number) {
 
   const xValue = x.toFixed(4);
   const yValue = y.toFixed(4);
-
-  const possibleStartingNum = [0, 2, 4, 8, 16];
 
   // get key
   const key = `${x},${y}`;
@@ -191,6 +188,8 @@ function spawnCell(x: number, y: number) {
       }
       // refresh displayed token
       updateDisplayedToken(rect, tokenValue);
+      // update map value
+      saveCellState(x, y, tokenValue);
     },
   );
 
@@ -201,7 +200,7 @@ function spawnCell(x: number, y: number) {
       // if equal values
       if (heldToken == tokenValue) {
         console.log(
-          `Combiing a token of value ${heldToken} to create a ${
+          `Combining a token of value ${heldToken} to create a ${
             heldToken! * 2
           } token!`,
         );
@@ -217,14 +216,19 @@ function spawnCell(x: number, y: number) {
         heldToken = null;
         statusPanelDiv.innerText = " ";
 
-        // store button turns on
+        // store button turns of
         popupDiv.querySelector<HTMLButtonElement>("#store")!.disabled = true;
+
+        // combine button turns off
+        popupDiv.querySelector<HTMLButtonElement>("#combine")!.disabled = true;
       } // if there exists no token (shouldn't happen because of button update func)
       else {
         console.log(`Cannot combine!`);
       }
       // refresh displayed token
       updateDisplayedToken(rect, tokenValue);
+      // update map value
+      saveCellState(x, y, tokenValue);
     },
   );
 
@@ -249,9 +253,14 @@ function spawnCell(x: number, y: number) {
 
         // take button turns on
         popupDiv.querySelector<HTMLButtonElement>("#take")!.disabled = false;
+
+        // store button turns off
+        popupDiv.querySelector<HTMLButtonElement>("#store")!.disabled = true;
       }
       // refresh displayed token
       updateDisplayedToken(rect, tokenValue);
+      // update map value
+      saveCellState(x, y, tokenValue);
     },
   );
 
@@ -408,7 +417,7 @@ function processMovement(
 }
 
 // helper function for updating map cells
-function _saveCellState(x: number, y: number, tokenValue: number | null) {
+function saveCellState(x: number, y: number, tokenValue: number | null) {
   const key = `${x},${y}`;
   cellState.set(key, { tokenValue });
 }
