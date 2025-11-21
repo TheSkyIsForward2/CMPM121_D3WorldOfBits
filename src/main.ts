@@ -133,8 +133,31 @@ movementToggle.id = "movementToggle";
 movementToggle.innerHTML = `<button id="newGameBtn">New Game</button>`;
 controlPanelDiv.append(movementToggle);
 
-// new game button (DONT FORGET TO UN-COMMENT)
-// const newGameBtn = movementToggle.querySelector<HTMLButtonElement>("#newGameBtn")!;
+// new game button
+const newGameBtn = movementToggle.querySelector<HTMLButtonElement>(
+  "#newGameBtn",
+)!;
+
+newGameBtn.addEventListener("click", () => {
+  if (!confirm("Start a new game? This will reset saved progress.")) return;
+
+  // clear stored data
+  localStorage.removeItem(LS_KEYS.CELLS);
+  localStorage.removeItem(LS_KEYS.HELD);
+  localStorage.removeItem(LS_KEYS.PLAYER);
+
+  // clear loaded data
+  cellState.clear();
+  heldToken = null;
+  statusPanelDiv.innerText = " ";
+  // reset player to original position (will be updated to normal location when geolocation is used)
+  applyPlayerMove(CLASSROOM_LATLNG);
+
+  // refresh display
+  featureGroup.clearLayers();
+  updateCircle();
+  cellGeneration();
+});
 
 const wrapDiv = document.createElement("div");
 wrapDiv.id = "wrapDiv";

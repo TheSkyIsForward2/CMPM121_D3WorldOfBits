@@ -70,5 +70,5 @@ Key technical challenge: Can you modify your system to use real-world location?
 [x] create functions for saving to localStorage API (used GPT to see # of functions needed)
 [x] figure out correct place to put above functions
 [x] player can start new game
-[] function for making new game
+[x] function for making new game
 [x] create button for above
