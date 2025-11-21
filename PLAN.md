@@ -58,3 +58,12 @@ Key technical challenge: Can you create a system to give cells permanence?
 [x] create helper function for map updating
 [x] figure out where to put helper function in current code
 [x] feed map the cells upon creation
+
+## D3.d: Gameplay Across Real-world Space and Time
+
+Key technical challenge: Can you modify your system to use real-world location?
+
+[] Browser geolocation API to control player movements
+[] Button to switch between controlled and real-world movement
+[] Save state for refreshing/leaving page (localStorage API)
+[] Player can start new game
