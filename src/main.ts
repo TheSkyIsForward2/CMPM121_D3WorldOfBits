@@ -17,8 +17,76 @@ controlPanelDiv.id = "controlPanel";
 controlPanelDiv.innerHTML = `<h1>D3: World of Bits</h1>`;
 document.body.append(controlPanelDiv);
 
-// map
+// storage keys 
+const LS_KEYS = {
+  CELLS: "wob_cells_v1",
+  HELD: "wob_heldToken_v1",
+  PLAYER: "wob_player_v1",
+  MODE: "wob_mode_v1",
+};
+
 const cellState = new Map<string, { tokenValue: number | null }>();
+
+// convert Map to plain object for storage
+function persistCells() {
+  const obj: Record<string, number | null> = {};
+  for (const [k, v] of cellState.entries()) {
+    obj[k] = v.tokenValue;
+  }
+  localStorage.setItem(LS_KEYS.CELLS, JSON.stringify(obj));
+}
+
+// load the cells from the JSON
+function loadCellsFromStorage() {
+  const raw = localStorage.getItem(LS_KEYS.CELLS);
+  if (!raw) return;
+  try {
+    const obj = JSON.parse(raw) as Record<string, number | null>;
+    cellState.clear();
+    for (const k of Object.keys(obj)) {
+      cellState.set(k, { tokenValue: obj[k] });
+    }
+  } catch (e) {
+    console.warn("Failed to parse stored cells:", e);
+  }
+}
+
+// save the heldToken to JSON
+function persistHeldToken() {
+  localStorage.setItem(LS_KEYS.HELD, JSON.stringify(heldToken));
+}
+
+// load the heldToken to JSON
+function loadHeldToken() {
+  const raw = localStorage.getItem(LS_KEYS.HELD);
+  if (!raw) return;
+  try {
+    heldToken = JSON.parse(raw) as number | null;
+    statusPanelDiv.innerText = heldToken ? `${heldToken}` : " ";
+  } catch (e) {
+    console.warn("Failed to parse held token:", e);
+  }
+}
+
+// i think you get the picture
+function persistPlayerPosition() {
+  const p = playerMarker.getLatLng();
+  localStorage.setItem(LS_KEYS.PLAYER, JSON.stringify([p.lat, p.lng]));
+}
+
+function loadPlayerPosition() {
+  const raw = localStorage.getItem(LS_KEYS.PLAYER);
+  if (!raw) return false;
+  try {
+    const [lat, lng] = JSON.parse(raw) as [number, number];
+    playerMarker.setLatLng(leaflet.latLng(lat, lng));
+    map.setView(playerMarker.getLatLng());
+    return true;
+  } catch (e) {
+    console.warn("Failed to parse player:", e);
+    return false;
+  }
+}
 
 // text array for buttons
 const direction = ["Up", "Down", "Left", "Right"];
@@ -40,6 +108,8 @@ direction.forEach((item) => {
     cellGeneration();
     // update map view
     map.setView(playerMarker.getLatLng());
+    // save to JSON
+    persistPlayerPosition();
   });
 });
 
@@ -102,6 +172,14 @@ leaflet
 // player mark
 const playerMarker = leaflet.marker(CLASSROOM_LATLNG).addTo(map);
 playerMarker.bindTooltip("Current locationation");
+
+// load persisted state (must run before cellGeneration so spawnCell can use cellState)
+loadCellsFromStorage();
+loadHeldToken();
+if (!loadPlayerPosition()) {
+  // fallback: classroom position already set by marker initialization
+  map.setView(playerMarker.getLatLng());
+}
 
 function spawnCell(x: number, y: number) {
   // x and y by lat long
@@ -188,8 +266,10 @@ function spawnCell(x: number, y: number) {
       }
       // refresh displayed token
       updateDisplayedToken(rect, tokenValue);
-      // update map value
+      // update map value && JSON
       saveCellState(x, y, tokenValue);
+      // save to JSON
+      persistHeldToken();
     },
   );
 
@@ -227,8 +307,10 @@ function spawnCell(x: number, y: number) {
       }
       // refresh displayed token
       updateDisplayedToken(rect, tokenValue);
-      // update map value
+      // update map value && JSON
       saveCellState(x, y, tokenValue);
+      // save to JSON
+      persistHeldToken();
     },
   );
 
@@ -259,8 +341,10 @@ function spawnCell(x: number, y: number) {
       }
       // refresh displayed token
       updateDisplayedToken(rect, tokenValue);
-      // update map value
+      // update map value && JSON
       saveCellState(x, y, tokenValue);
+      // update JSON
+      persistHeldToken();
     },
   );
 
@@ -420,6 +504,8 @@ function processMovement(
 function saveCellState(x: number, y: number, tokenValue: number | null) {
   const key = `${x},${y}`;
   cellState.set(key, { tokenValue });
+  // added call to JSON save
+  persistCells();
 }
 
 // helper functions for converting Grid and LatLong coordinates
