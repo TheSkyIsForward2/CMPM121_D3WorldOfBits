@@ -5,7 +5,7 @@
 #inventory {
   padding: 1rem;
   border: 2px solid black;
-  width: 30%;
+  width: 40%;
 }
 
 #statusPanel {
@@ -27,4 +27,8 @@
 #wrapDiv {
   display: flex;
   gap: 5px;
+}
+
+#newGameBtn {
+  margin: 3px;
 }

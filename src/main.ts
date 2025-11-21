@@ -17,7 +17,7 @@ controlPanelDiv.id = "controlPanel";
 controlPanelDiv.innerHTML = `<h1>D3: World of Bits</h1>`;
 document.body.append(controlPanelDiv);
 
-// storage keys 
+// storage keys
 const LS_KEYS = {
   CELLS: "wob_cells_v1",
   HELD: "wob_heldToken_v1",
@@ -98,20 +98,43 @@ direction.forEach((item) => {
   controlPanelDiv.append(directionButton);
 
   directionButton.addEventListener("click", () => {
-    // move in directionection with movement function
-    playerMarker.setLatLng(processMovement(playerMarker.getLatLng(), item));
-    // clear layers first
-    featureGroup.clearLayers();
-    // update circle
-    updateCircle();
-    // generate cells
-    cellGeneration();
-    // update map view
-    map.setView(playerMarker.getLatLng());
-    // save to JSON
-    persistPlayerPosition();
+    // change movement
+    const newPos = processMovement(playerMarker.getLatLng(), item);
+    // store new movement
+    applyPlayerMove(newPos);
   });
 });
+
+function applyPlayerMove(newLatLng: leaflet.LatLng | [number, number]) {
+  // accept both LatLng object and [lat, lng] tuple
+  let latlng: leaflet.LatLng;
+  if (Array.isArray(newLatLng)) {
+    latlng = leaflet.latLng(newLatLng[0], newLatLng[1]);
+  } else {
+    latlng = newLatLng;
+  }
+
+  // change latLng
+  playerMarker.setLatLng(latlng);
+  // clear layers first
+  featureGroup.clearLayers();
+  // update circle
+  updateCircle();
+  // generate cells
+  cellGeneration();
+  // update map view
+  map.setView(playerMarker.getLatLng());
+  // save to JSON
+  persistPlayerPosition();
+}
+
+const movementToggle = document.createElement("div");
+movementToggle.id = "movementToggle";
+movementToggle.innerHTML = `<button id="newGameBtn">New Game</button>`;
+controlPanelDiv.append(movementToggle);
+
+// new game button (DONT FORGET TO UN-COMMENT)
+// const newGameBtn = movementToggle.querySelector<HTMLButtonElement>("#newGameBtn")!;
 
 const wrapDiv = document.createElement("div");
 wrapDiv.id = "wrapDiv";

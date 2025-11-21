@@ -65,7 +65,10 @@ Key technical challenge: Can you modify your system to use real-world location?
 
 [] browser geolocation API to control player movements
 [] button to switch between controlled and real-world movement
+[] modify current movement into a helper function
 [x] save state for refreshing/leaving page (localStorage API)
 [x] create functions for saving to localStorage API (used GPT to see # of functions needed)
 [x] figure out correct place to put above functions
-[] player can start new game
+[x] player can start new game
+[] function for making new game
+[x] create button for above
