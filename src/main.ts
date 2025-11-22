@@ -148,7 +148,7 @@ newGameBtn.addEventListener("click", () => {
 
   // clear loaded data
   cellState.clear();
-  heldToken = null;
+  heldToken = 2;
   statusPanelDiv.innerText = " ";
   // reset player to original position (will be updated to normal location when geolocation is used)
   applyPlayerMove(CLASSROOM_LATLNG);
@@ -225,6 +225,13 @@ loadHeldToken();
 if (!loadPlayerPosition()) {
   // fallback: classroom position already set by marker initialization
   map.setView(playerMarker.getLatLng());
+}
+
+// movement interface - facade
+interface MovementController {
+  start(): void; // start listening / watching
+  stop(): void; // stop watching
+  requestModeSwitch?(mode: "buttons" | "geo"): void; // optional helper
 }
 
 function spawnCell(x: number, y: number) {
