@@ -146,8 +146,12 @@ movementToggle.innerHTML = `
 `;
 controlPanelDiv.append(movementToggle);
 
-const modeSelect = movementToggle.querySelector<HTMLSelectElement>("#movementModeSelect")!;
-const newGameBtn = movementToggle.querySelector<HTMLButtonElement>("#newGameBtn")!;
+const modeSelect = movementToggle.querySelector<HTMLSelectElement>(
+  "#movementModeSelect",
+)!;
+const newGameBtn = movementToggle.querySelector<HTMLButtonElement>(
+  "#newGameBtn",
+)!;
 
 newGameBtn.addEventListener("click", () => {
   // confirm statement (cool tool btw)
@@ -257,7 +261,7 @@ class ButtonMovement implements MovementController {
   constructor(onMove: (l: leaflet.LatLng | [number, number]) => void) {
     this.onMove = onMove;
     // wire existing buttons
-    this.wireButtons(); 
+    this.wireButtons();
   }
 
   private wireButtons() {
@@ -280,9 +284,15 @@ class ButtonMovement implements MovementController {
     });
   }
 
-  start() { enableMovementButtons()}
-  stop() { disableMovementButtons() }
-  requestModeSwitch?(mode: "buttons" | "geo") { if (mode === "buttons") this.wireButtons(); }
+  start() {
+    enableMovementButtons();
+  }
+  stop() {
+    disableMovementButtons();
+  }
+  requestModeSwitch?(mode: "buttons" | "geo") {
+    if (mode === "buttons") this.wireButtons();
+  }
 }
 
 // geolocation code I needed ChatGPT to help with
@@ -323,7 +333,7 @@ class GeoMovement implements MovementController {
     // FIRST GPS FIX — move marker directly to true position
     if (!geoInitialized) {
       geoInitialized = true;
-      this.onMove(leaflet.latLng(lat, lng));   // no snapping
+      this.onMove(leaflet.latLng(lat, lng)); // no snapping
       return;
     }
 
@@ -621,7 +631,7 @@ function disableMovementButtons() {
   const container = document.getElementById("movementButtons");
   if (!container) return;
 
-  container.querySelectorAll("button").forEach(btn => {
+  container.querySelectorAll("button").forEach((btn) => {
     (btn as HTMLButtonElement).disabled = true;
   });
 }
@@ -630,7 +640,7 @@ function enableMovementButtons() {
   const container = document.getElementById("movementButtons");
   if (!container) return;
 
-  container.querySelectorAll("button").forEach(btn => {
+  container.querySelectorAll("button").forEach((btn) => {
     (btn as HTMLButtonElement).disabled = false;
   });
 }
