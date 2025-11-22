@@ -88,6 +88,10 @@ function loadPlayerPosition() {
   }
 }
 
+const movementButtons = document.createElement("div");
+movementButtons.id = "movementButtons";
+document.body.append(movementButtons);
+
 // text array for buttons
 const direction = ["Up", "Down", "Left", "Right"];
 
@@ -95,7 +99,7 @@ direction.forEach((item) => {
   // add buttons
   const directionButton = document.createElement("button");
   directionButton.innerHTML = item;
-  controlPanelDiv.append(directionButton);
+  movementButtons.append(directionButton);
 
   directionButton.addEventListener("click", () => {
     // change movement
@@ -201,6 +205,9 @@ const CELL_SPAWN_PROBABILITY = 0.07;
 const winCondition = 32;
 const possibleStartingNum = [0, 2, 4, 8, 16];
 
+// suggested fix to geolocation bug
+let geoInitialized = false;
+
 // map
 const map = leaflet.map(mapDiv, {
   center: CLASSROOM_LATLNG,
@@ -273,8 +280,8 @@ class ButtonMovement implements MovementController {
     });
   }
 
-  start() { /* nothing to start*/ }
-  stop() { /* nothing to stop for buttons */ }
+  start() { enableMovementButtons()}
+  stop() { disableMovementButtons() }
   requestModeSwitch?(mode: "buttons" | "geo") { if (mode === "buttons") this.wireButtons(); }
 }
 
@@ -298,6 +305,7 @@ class GeoMovement implements MovementController {
       (err) => console.warn("geolocation error:", err),
       { enableHighAccuracy: true, maximumAge: 1000, timeout: 10000 },
     );
+    disableMovementButtons();
   }
 
   stop() {
@@ -312,19 +320,22 @@ class GeoMovement implements MovementController {
     const lat = position.coords.latitude;
     const lng = position.coords.longitude;
 
-    // convert to tile-centered movement: ff device moves by >= TILE_DEGREES, apply movement step.
+    // FIRST GPS FIX — move marker directly to true position
+    if (!geoInitialized) {
+      geoInitialized = true;
+      this.onMove(leaflet.latLng(lat, lng));   // no snapping
+      return;
+    }
+
     const current = playerMarker.getLatLng();
     const dLat = lat - current.lat;
     const dLng = lng - current.lng;
 
-    // if small drift, do nothing
     if (Math.abs(dLat) < TILE_DEGREES && Math.abs(dLng) < TILE_DEGREES) return;
 
-    // snap to nearest grid step
     const stepsLat = Math.round((lat - current.lat) / TILE_DEGREES);
     const stepsLng = Math.round((lng - current.lng) / TILE_DEGREES);
 
-    // compute new latLng by stepping from current by these steps
     const newLat = current.lat + stepsLat * TILE_DEGREES;
     const newLng = current.lng + stepsLng * TILE_DEGREES;
 
@@ -603,6 +614,25 @@ function updateCircle() {
   const radius = leaflet.circleMarker(playerMarker.getLatLng(), { radius: 200 })
     .addTo(map);
   featureGroup.addLayer(radius);
+}
+
+// helper functions to disable/enable movement
+function disableMovementButtons() {
+  const container = document.getElementById("movementButtons");
+  if (!container) return;
+
+  container.querySelectorAll("button").forEach(btn => {
+    (btn as HTMLButtonElement).disabled = true;
+  });
+}
+
+function enableMovementButtons() {
+  const container = document.getElementById("movementButtons");
+  if (!container) return;
+
+  container.querySelectorAll("button").forEach(btn => {
+    (btn as HTMLButtonElement).disabled = false;
+  });
 }
 
 // call mode at main

@@ -1,5 +1,6 @@
 #controlPanel {
   padding: 1rem;
+  align-content: center;
 }
 
 #inventory {
@@ -31,4 +32,9 @@
 
 #newGameBtn {
   margin: 3px;
+}
+
+#movementButtons {
+  margin: 5px;
+  left: 100px;
 }

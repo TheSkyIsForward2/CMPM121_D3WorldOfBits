@@ -77,5 +77,7 @@ Key technical challenge: Can you modify your system to use real-world location?
 [x] player can start new game
 [x] function for making new game
 [x] create button for above
+[x] disable/enable movement buttons on mode select
+[x] fixed geolocation bug (?)
 
-Side note: my geolocation function does not give me the correct location, but I am unsure of whether this is because the code is wrong or if my device is feeding the wrong location. Regardless, the location that was given was quite close, so I made the judgement call to not change it.
+Side Note: there was a bug in this project that I do not have the capacity to understand. Sometimes the geolocation that is grabbed is correct, and sometimes it isn't. I am unsure if this error extends beyond my device. Throughout the creation of the 4th part, the location was consistently wrong, with only occasionally updating to the right location. I "fixed" it in the latest push, but for reasons I cannot understand the first few game resets it was in the wrong position.
