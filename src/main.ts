@@ -142,7 +142,7 @@ movementToggle.innerHTML = `
 `;
 controlPanelDiv.append(movementToggle);
 
-//const modeSelect = movementToggle.querySelector<HTMLSelectElement>("#movementModeSelect")!;
+const modeSelect = movementToggle.querySelector<HTMLSelectElement>("#movementModeSelect")!;
 const newGameBtn = movementToggle.querySelector<HTMLButtonElement>("#newGameBtn")!;
 
 newGameBtn.addEventListener("click", () => {
@@ -243,7 +243,7 @@ interface MovementController {
 }
 
 // class for button movement
-class _ButtonMovement implements MovementController {
+class ButtonMovement implements MovementController {
   private onMove: (newPos: leaflet.LatLng | [number, number]) => void;
   private listeners: Array<() => void> = [];
 
@@ -279,7 +279,7 @@ class _ButtonMovement implements MovementController {
 }
 
 // geolocation code I needed ChatGPT to help with
-class _GeoMovement implements MovementController {
+class GeoMovement implements MovementController {
   private onMove: (newPos: leaflet.LatLng) => void;
   private watchId: number | null = null;
   constructor(onMove: (l: leaflet.LatLng) => void) {
@@ -605,6 +605,32 @@ function updateCircle() {
   featureGroup.addLayer(radius);
 }
 
+// call mode at main
+modeSelect.value = getInitialMode();
+localStorage.setItem(LS_KEYS.MODE, modeSelect.value);
+
+// movement controller instances
+let movementController: MovementController | null = null;
+
+function startMovementController(mode: "buttons" | "geo") {
+  if (movementController) movementController.stop();
+  if (mode === "geo") {
+    movementController = new GeoMovement((pos) => applyPlayerMove(pos));
+  } else {
+    movementController = new ButtonMovement((pos) => applyPlayerMove(pos));
+  }
+  movementController.start();
+  localStorage.setItem(LS_KEYS.MODE, mode);
+}
+
+// initial start
+startMovementController(modeSelect.value as "buttons" | "geo");
+
+// runtime switch
+modeSelect.addEventListener("change", () => {
+  startMovementController(modeSelect.value as "buttons" | "geo");
+});
+
 // obtainable range of caches drawn - need to update to follow person
 leaflet.circleMarker(CLASSROOM_LATLNG, { radius: 200 }).addTo(featureGroup);
 
@@ -632,6 +658,17 @@ map.addEventListener("moveend", () => {
   updateCircle();
   cellGeneration();
 });
+
+// helper function for determining starting movement mode
+function getInitialMode(): "buttons" | "geo" {
+  const params = new URLSearchParams(globalThis.location.search);
+  const q = params.get("movement");
+  const stored = localStorage.getItem(LS_KEYS.MODE) as "buttons" | "geo" | null;
+  if (q === "geolocation" || q === "geo") return "geo";
+  if (q === "buttons") return "buttons";
+  if (stored) return stored;
+  return "buttons";
+}
 
 // movement function
 function processMovement(

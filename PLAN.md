@@ -63,13 +63,13 @@ Key technical challenge: Can you create a system to give cells permanence?
 
 Key technical challenge: Can you modify your system to use real-world location?
 
-[] browser geolocation API to control player movements
+[x] browser geolocation API to control player movements
 [x] create facade interface for base movement
 [x] create classes for different movement types based on interface (had to use ChatGPT)
 [x] dropdown to switch between controlled and real-world movement
-[] start movement mode on load
-[] create the controller to switch
-[] save controller state to the JSON
+[x] start movement mode on load
+[x] create the controller to switch
+[x] save controller state to the JSON
 [x] modify current movement into a helper function
 [x] save state for refreshing/leaving page (localStorage API)
 [x] create functions for saving to localStorage API (used GPT to see # of functions needed)
@@ -77,3 +77,5 @@ Key technical challenge: Can you modify your system to use real-world location?
 [x] player can start new game
 [x] function for making new game
 [x] create button for above
+
+Side note: my geolocation function does not give me the correct location, but I am unsure of whether this is because the code is wrong or if my device is feeding the wrong location. Regardless, the location that was given was quite close, so I made the judgement call to not change it.
