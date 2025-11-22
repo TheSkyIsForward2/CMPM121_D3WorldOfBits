@@ -64,9 +64,12 @@ Key technical challenge: Can you create a system to give cells permanence?
 Key technical challenge: Can you modify your system to use real-world location?
 
 [] browser geolocation API to control player movements
-[] create facade interface for base movement
-[] create classes for different movement types based on interface
-[] button to switch between controlled and real-world movement
+[x] create facade interface for base movement
+[x] create classes for different movement types based on interface (had to use ChatGPT)
+[x] dropdown to switch between controlled and real-world movement
+[] start movement mode on load
+[] create the controller to switch
+[] save controller state to the JSON
 [x] modify current movement into a helper function
 [x] save state for refreshing/leaving page (localStorage API)
 [x] create functions for saving to localStorage API (used GPT to see # of functions needed)

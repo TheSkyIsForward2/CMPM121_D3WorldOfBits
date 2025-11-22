@@ -128,17 +128,25 @@ function applyPlayerMove(newLatLng: leaflet.LatLng | [number, number]) {
   persistPlayerPosition();
 }
 
+// movement UI
 const movementToggle = document.createElement("div");
 movementToggle.id = "movementToggle";
-movementToggle.innerHTML = `<button id="newGameBtn">New Game</button>`;
+movementToggle.innerHTML = `
+  <label> Movement: 
+    <select id="movementModeSelect">
+      <option value="buttons">Buttons</option>
+      <option value="geo">Geolocation</option>
+    </select>
+  </label>
+  <button id="newGameBtn">New Game</button>
+`;
 controlPanelDiv.append(movementToggle);
 
-// new game button
-const newGameBtn = movementToggle.querySelector<HTMLButtonElement>(
-  "#newGameBtn",
-)!;
+//const modeSelect = movementToggle.querySelector<HTMLSelectElement>("#movementModeSelect")!;
+const newGameBtn = movementToggle.querySelector<HTMLButtonElement>("#newGameBtn")!;
 
 newGameBtn.addEventListener("click", () => {
+  // confirm statement (cool tool btw)
   if (!confirm("Start a new game? This will reset saved progress.")) return;
 
   // clear stored data
@@ -232,6 +240,96 @@ interface MovementController {
   start(): void; // start listening / watching
   stop(): void; // stop watching
   requestModeSwitch?(mode: "buttons" | "geo"): void; // optional helper
+}
+
+// class for button movement
+class _ButtonMovement implements MovementController {
+  private onMove: (newPos: leaflet.LatLng | [number, number]) => void;
+  private listeners: Array<() => void> = [];
+
+  constructor(onMove: (l: leaflet.LatLng | [number, number]) => void) {
+    this.onMove = onMove;
+    // wire existing buttons
+    this.wireButtons(); 
+  }
+
+  private wireButtons() {
+    // find arrow buttons
+    const btns = Array.from(controlPanelDiv.querySelectorAll("button"));
+    // remove previously attached handlers
+    btns.forEach((b) => {
+      // clear old listeners
+      b.replaceWith(b.cloneNode(true));
+    });
+
+    // re-query fresh buttons
+    const freshBtns = Array.from(controlPanelDiv.querySelectorAll("button"));
+    freshBtns.forEach((b) => {
+      const text = b.innerHTML;
+      b.addEventListener("click", () => {
+        const newPos = processMovement(playerMarker.getLatLng(), text);
+        this.onMove(newPos);
+      });
+    });
+  }
+
+  start() { /* nothing to start*/ }
+  stop() { /* nothing to stop for buttons */ }
+  requestModeSwitch?(mode: "buttons" | "geo") { if (mode === "buttons") this.wireButtons(); }
+}
+
+// geolocation code I needed ChatGPT to help with
+class _GeoMovement implements MovementController {
+  private onMove: (newPos: leaflet.LatLng) => void;
+  private watchId: number | null = null;
+  constructor(onMove: (l: leaflet.LatLng) => void) {
+    this.onMove = onMove;
+  }
+
+  start() {
+    // if fail, do buttons instead
+    if (!("geolocation" in navigator)) {
+      console.warn("Geolocation not supported, falling back to buttons.");
+      return;
+    }
+    // prefer high accuracy so small device movements translate into lat/lng changes
+    this.watchId = navigator.geolocation.watchPosition(
+      (pos) => this.handlePos(pos),
+      (err) => console.warn("geolocation error:", err),
+      { enableHighAccuracy: true, maximumAge: 1000, timeout: 10000 },
+    );
+  }
+
+  stop() {
+    if (this.watchId != null) {
+      navigator.geolocation.clearWatch(this.watchId);
+      this.watchId = null;
+    }
+  }
+
+  // function that snaps the player to the grid based on where their location is
+  private handlePos(position: GeolocationPosition) {
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
+
+    // convert to tile-centered movement: ff device moves by >= TILE_DEGREES, apply movement step.
+    const current = playerMarker.getLatLng();
+    const dLat = lat - current.lat;
+    const dLng = lng - current.lng;
+
+    // if small drift, do nothing
+    if (Math.abs(dLat) < TILE_DEGREES && Math.abs(dLng) < TILE_DEGREES) return;
+
+    // snap to nearest grid step
+    const stepsLat = Math.round((lat - current.lat) / TILE_DEGREES);
+    const stepsLng = Math.round((lng - current.lng) / TILE_DEGREES);
+
+    // compute new latLng by stepping from current by these steps
+    const newLat = current.lat + stepsLat * TILE_DEGREES;
+    const newLng = current.lng + stepsLng * TILE_DEGREES;
+
+    this.onMove(leaflet.latLng(newLat, newLng));
+  }
 }
 
 function spawnCell(x: number, y: number) {
